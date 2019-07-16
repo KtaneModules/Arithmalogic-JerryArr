@@ -129,8 +129,8 @@ public class Arithmelogic : MonoBehaviour
         bcOperator = Rnd.Range(0, 8);
         abParen = Rnd.Range(0, 2) != 0;
         var symbolIxs = Enumerable.Range(0, symbols.Length).ToList().Shuffle();
-        offsets = symbolIxs.Take(3).Select(ix => getSymbolValue(ix)).ToArray();
         submitSymbol = symbolIxs[3];
+        offsets = symbolIxs.Take(3).Select(ix => getSymbolValue(ix)).ToArray();
 
         var equationText = string.Format(abParen ? @"({0} {1} {2}) {3} {4}" : @"{0} {1} ({2} {3} {4})", symbols[symbolIxs[0]], operators[abOperator], symbols[symbolIxs[1]], operators[bcOperator], symbols[symbolIxs[2]]);
         EquationText.text = equationText;
