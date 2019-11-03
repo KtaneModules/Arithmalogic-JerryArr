@@ -128,6 +128,14 @@ public class Arithmelogic : MonoBehaviour
         abOperator = Rnd.Range(0, 8);
         bcOperator = Rnd.Range(0, 8);
         abParen = Rnd.Range(0, 2) != 0;
+		if (abParen)
+		{
+			bcOperator = Rnd.Range(2, 8);
+		}
+		else
+		{
+			abOperator = Rnd.Range(2, 8);
+		}
         var symbolIxs = Enumerable.Range(0, symbols.Length).ToList().Shuffle();
         submitSymbol = symbolIxs[3];
         offsets = symbolIxs.Take(3).Select(ix => getSymbolValue(ix)).ToArray();
@@ -282,13 +290,13 @@ public class Arithmelogic : MonoBehaviour
             case 7: return lastTwo[0] - lastTwo[1] >= -2 && lastTwo[0] - lastTwo[1] <= 2;
             case 8: return n % 7 == 1 || n % 7 == 3 || n % 7 == 6;
             case 9: return nStr.Contains("3") || nStr.Contains("6");
-            case 10: return ((n + 1) % 9) % 2 == 0; // digital root is odd
+            case 10: return (((n - 1) % 9) + 1) % 2 == 1; // digital root is odd
             case 11: return n % 4 == 0;
             case 12: return digitSum % 2 == 1;
             case 13: return n % 2 != 0;
             case 14: return digitSum < 7 || digitSum > 11;
             case 15: return n % 6 == 0;
-            case 16: return ((n + 1) % 9) % 2 == 1; // digital root is even
+            case 16: return (((n - 1) % 9) + 1) % 2 == 0; // digital root is even
             case 17: return n > 3 && !isPrime(n);
             case 18: return digitSum % 2 == 0;
             case 19: return nStr.Contains("2") || nStr.Contains("9");
