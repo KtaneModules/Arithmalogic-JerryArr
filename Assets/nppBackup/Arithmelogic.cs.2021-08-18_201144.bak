@@ -14,32 +14,11 @@ public class Arithmelogic : MonoBehaviour
     public KMAudio Audio;
     public KMBombModule Module;
 
-    public Texture[] symbolAImages;
-    public Texture[] symbolBImages;
-    public Texture[] symbolCImages;
-    public Texture[] symbolSImages;
-	
-	
-    public MeshRenderer symbolAImage;
-    public MeshRenderer symbolBImage;
-    public MeshRenderer symbolCImage;
-    public MeshRenderer symbolSImage;
-
-    public MeshRenderer leftParen;
-    public MeshRenderer rightParen;
-    public MeshRenderer leftSymbol;
-    public MeshRenderer rightSymbol;
-
     public KMSelectable SubmitButton;
     public TextMesh SubmitButtonSymbol;
     public KMSelectable[] NumberButtons;
     public TextMesh[] NumberDisplays;
     public TextMesh EquationText;
-
-    public TextMesh lpText;
-    public TextMesh rpText;
-    public TextMesh lSymbol;
-    public TextMesh rSymbol;
 
     private static int _moduleIdCounter = 1;
     private int _moduleId;
@@ -144,37 +123,27 @@ public class Arithmelogic : MonoBehaviour
 
         for (int i = 0; i < 3; i++)
             NumberButtons[i].OnInteract = handleButtonPress(i);
-
         SubmitButton.OnInteract += doSubmit;
-        
+
         abOperator = Rnd.Range(0, 8);
         bcOperator = Rnd.Range(0, 8);
         abParen = Rnd.Range(0, 2) != 0;
-        if (abParen)
+		if (abParen)
 		{
 			bcOperator = Rnd.Range(2, 8);
-            leftParen.enabled = true;
-            rightParen.enabled = false;
 		}
 		else
 		{
 			abOperator = Rnd.Range(2, 8);
-            leftParen.enabled = false;
-            rightParen.enabled = true;
-        }
+		}
         var symbolIxs = Enumerable.Range(0, symbols.Length).ToList().Shuffle();
         submitSymbol = symbolIxs[3];
         offsets = symbolIxs.Take(3).Select(ix => getSymbolValue(ix)).ToArray();
 
         var equationText = string.Format(abParen ? @"({0} {1} {2}) {3} {4}" : @"{0} {1} ({2} {3} {4})", symbols[symbolIxs[0]], operators[abOperator], symbols[symbolIxs[1]], operators[bcOperator], symbols[symbolIxs[2]]);
-        //EquationText.text = equationText;
-        //SubmitButtonSymbol.text = symbols[submitSymbol];
-        symbolAImage.material.mainTexture = symbolAImages[symbolIxs[0]];
-        symbolBImage.material.mainTexture = symbolBImages[symbolIxs[1]];
-        symbolCImage.material.mainTexture = symbolCImages[symbolIxs[2]];
-        symbolSImage.material.mainTexture = symbolSImages[submitSymbol];
-        leftSymbol.GetComponentInChildren<TextMesh>().text = operators[abOperator];
-        rightSymbol.GetComponentInChildren<TextMesh>().text = operators[bcOperator];
+        EquationText.text = equationText;
+        SubmitButtonSymbol.text = symbols[submitSymbol];
+
         selectableValues = new int[3][];
         for (int i = 0; i < 3; i++)
         {
@@ -223,13 +192,7 @@ public class Arithmelogic : MonoBehaviour
     private void UpdateNumberDisplays()
     {
         for (int i = 0; i < 3; i++)
-        {
-            
             NumberDisplays[i].text = selectableValues[i][currentDisplays[i]].ToString();
-            Debug.LogFormat("select {0} = {1}", i, selectableValues[i][currentDisplays[i]]);
-        }
-            
-        
     }
 
     bool doSubmit()
@@ -277,16 +240,8 @@ public class Arithmelogic : MonoBehaviour
             {
                 Debug.LogFormat("[Arithmelogic #{0}] Module disarmed!", _moduleId);
                 isSolved = true;
-                //SubmitButtonSymbol.text = "!!";
-                //EquationText.text = "";
-                symbolAImage.enabled = false;
-                symbolBImage.enabled = false;
-                symbolCImage.enabled = false;
-                symbolSImage.enabled = false;
-                leftParen.enabled = false;
-                rightParen.enabled = false;
-                leftSymbol.GetComponentInChildren<TextMesh>().text = "";
-                rightSymbol.GetComponentInChildren<TextMesh>().text = "";
+                SubmitButtonSymbol.text = "!!";
+                EquationText.text = "";
                 for (int i = 0; i < NumberDisplays.Length; i++)
                     NumberDisplays[i].text = "";
                 Audio.PlaySoundAtTransform("beep2", Module.transform);
