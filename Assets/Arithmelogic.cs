@@ -224,12 +224,8 @@ public class Arithmelogic : MonoBehaviour
     {
         for (int i = 0; i < 3; i++)
         {
-            
             NumberDisplays[i].text = selectableValues[i][currentDisplays[i]].ToString();
-            Debug.LogFormat("select {0} = {1}", i, selectableValues[i][currentDisplays[i]]);
         }
-            
-        
     }
 
     bool doSubmit()
@@ -463,5 +459,58 @@ public class Arithmelogic : MonoBehaviour
             yield return new[] { SubmitButton };
             yield break;
         }
+    }
+
+    // Implemented by Quinn Wuest
+    private IEnumerator TwitchHandleForcedSolve()
+    {
+        int[] submission = new int[3];
+        for (int A = 0; A < 4; A++)
+            for (int B = 0; B < 4; B++)
+                for (int C = 0; C < 4; C++)
+                {
+                    var values = new int[] { A, B, C };
+                    var abcValues = Enumerable.Range(0, 3).Select(ix => selectableValues[ix][values[ix]] + offsets[ix]).ToArray();
+                    var abcTruths = abcValues.Select(isNumberTrue).ToArray();
+
+                    var finalTruth = false;
+                    if (abParen)
+                        finalTruth = figureTruth(figureTruth(abcTruths[0], abcTruths[1], abOperator), abcTruths[2], bcOperator);
+                    else
+                        finalTruth = figureTruth(abcTruths[0], figureTruth(abcTruths[1], abcTruths[2], bcOperator), abOperator);
+
+                    int str = 0;
+                    if (!finalTruth)
+                        str++;
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int testIx = 3; testIx > values[i]; testIx--)
+                        {
+                            if (isNumberTrue(offsets[i] + selectableValues[i][testIx]) == abcTruths[i])
+                            {
+                                str++;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (str == 0)
+                    {
+                        submission = values.ToArray();
+                        goto done;
+                    }
+                }
+        done:
+        for (int i = 0; i < 3; i++)
+        {
+            while (currentDisplays[i] != submission[i])
+            {
+                NumberButtons[i].OnInteract();
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
+        SubmitButton.OnInteract();
+        yield break;
     }
 }
